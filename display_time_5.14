@@ -1,0 +1,66 @@
+from datetime import datetime, timedelta
+import io
+import pygame
+import sys
+
+# define the RGB value for white,
+#  green, blue colour .
+white = (255, 255, 255)
+green = (0, 255, 0)
+blue = (0, 0, 128)
+black = (0, 0, 0)
+
+pygame.init()
+screen_width = 1024  #Change this to your screen's width
+screen_height = 600  #Change this to your screen's height
+# create the display surface object
+        # of specific dimension..e(X, Y).
+screen = pygame.display.set_mode((1200,1000), pygame.RESIZABLE )
+screen.fill(white)
+ 
+# set the pygame window name
+pygame.display.set_caption('Show Text')
+
+# create a font object.
+# 1st parameter is the font file
+# which is present in pygame.
+# 2nd parameter is size of the font
+#font = pygame.font.Font('freesansbold.ttf', 120)
+font = pygame.font.Font(None, 100)
+ 
+# create a text surface object,
+# on which text is drawn on it.
+
+def current_time_in_pacific():
+    # Get current UTC time
+    utc_now = datetime.utcnow()
+
+    # Calculate the offset for Pacific Time (UTC-8 or UTC-7 depending on daylight saving time)
+    pacific_offset = -7 if is_dst(utc_now.year) else -8
+
+    # Adjust UTC time to Pacific Time
+    pacific_now = utc_now + timedelta(hours=pacific_offset)
+
+    return pacific_now.strftime('%H:%M:%S')
+
+def is_dst(year):
+    # Function to check if daylight saving time (DST) is in effect for a given year
+    # DST in the United States starts on the second Sunday of March and ends on the first Sunday of November
+    dst_start = datetime(year, 3, 8)  # 2nd Sunday of March
+    dst_end = datetime(year, 11, 1)   # 1st Sunday of November
+
+    # Check if the current time falls within DST
+    return dst_start <= datetime.utcnow() <= dst_end
+
+
+while True:
+    text = font.render(current_time_in_pacific(), True, white)
+    print("Current Time in Pacific Time:", current_time_in_pacific())
+    
+    text_rect = text.get_rect()
+    text_rect.center = (screen_width // 2, screen_height // 2)
+    
+    screen.fill(black)  # Fill the screen with a black background
+    screen.blit(text, text_rect)  # Blit the text onto the screen
+
+    pygame.display.flip()
